@@ -71,3 +71,48 @@ El proyecto busca simular un entorno de producción real, donde el modelo sea ú
 - **Population Stability Index (PSI)**: Se obtuvo un resultado inferior a 0.001, lo que indica distribuciones prácticamente idénticas y confirma que las poblaciones entre entrenamiento y test son muy similares.
 - **Curva de calibración**: Verifica si las probabilidades estimadas por el modelo se alinean con las probabilidades reales, siendo clave para la definición de tasas de interés. El modelo obtuvo resultados sólidos, con probabilidades predichas muy cercanas a las reales, por lo que no requiere ajustes adicionales.
 - **Segmentación de usuarios**: El modelo segmenta a los usuarios por tasa de impago, permitiendo automatizar aproximadamente el 76% de las solicitudes.
+
+```mermaid
+flowchart TD
+    A["Inicio"] --> B["Config y dependencias"]
+    B --> C{"VALIDATE_COLUMNS?"}
+    C -- "No" --> D["Omitir descarga/validacion"]
+    C -- "Si" --> E{"Credenciales Kaggle?"}
+    E -- "No" --> F["Advertir y omitir descarga"]
+    E -- "Si" --> G["Descargar zip, validar, descomprimir"]
+    D --> H["Conectar SQLite"]
+    F --> H
+    G --> H
+    H --> I["Loop CSV a cargar tablas"]
+    I --> J["Cargar application_train"]
+    J --> K{"Hay TARGET?"}
+    K -- "No" --> L["Fin sin entrenamiento"]
+    K -- "Si" --> M["Split train/holdout"]
+    M --> N["Importancia base (LightGBM)"]
+    N --> O{"Features ok?"}
+    O -- "No" --> L
+    O -- "Si" --> P["Agregados bureau/installments/previous"]
+    P --> Q["Merge + ratios"]
+    Q --> R["Lista final de features"]
+    R --> S{"USE_OPTUNA?"}
+    S -- "Si" --> T["Tuning Optuna (CV)"]
+    S -- "No" --> U["Params por defecto"]
+    T --> U
+    U --> V["CV metrics + ROC data"]
+    V --> W["Fit modelo final"]
+    W --> X{"Holdout disponible?"}
+    X -- "Si" --> Y["Metricas holdout + PSI + calibracion + deciles + bands"]
+    X -- "No" --> Z["Omitir holdout"]
+    W --> AA["Importancias"]
+    AA --> AB{"RUN_SHAP y deps?"}
+    AB -- "Si" --> AC["SHAP summary plot"]
+    AB -- "No" --> AD["Omitir SHAP"]
+    V --> AE{"Matplotlib?"}
+    AE -- "Si" --> AF["Plot ROC CV"]
+    AE -- "No" --> AG["Omitir ROC plot"]
+    Y --> AH["Guardar plots"]
+    Z --> AH
+    AC --> AH
+    AF --> AH
+    AH --> AI["Fin"]
+```
