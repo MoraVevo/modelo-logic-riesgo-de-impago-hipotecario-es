@@ -72,6 +72,8 @@ El proyecto busca simular un entorno de producción real, donde el modelo sea ú
 - **Curva de calibración**: Verifica si las probabilidades estimadas por el modelo se alinean con las probabilidades reales, siendo clave para la definición de tasas de interés. El modelo obtuvo resultados sólidos, con probabilidades predichas muy cercanas a las reales, por lo que no requiere ajustes adicionales.
 - **Segmentación de usuarios**: El modelo segmenta a los usuarios por tasa de impago, permitiendo automatizar aproximadamente el 76% de las solicitudes.
 
+<img src="img/bandas.png" width=700>
+
 ```mermaid
 flowchart TD
     A["Inicio"] --> B["Config y dependencias"]
