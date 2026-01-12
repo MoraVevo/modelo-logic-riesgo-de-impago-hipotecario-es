@@ -1,0 +1,10 @@
+numpy
+pandas
+scikit-learn
+
+# Optional (only if you enable/use these features in credit-risk.py)
+matplotlib
+lightgbm
+optuna
+shap
+kaggle
